@@ -66,16 +66,7 @@ void CWinOGLView::OnDraw(CDC* pDC)
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT	/*	|	GL_DEPTH_BUFFER_BIT*/);
 
-	glColor3f(1.0, 1.0, 1.0);
-	glPointSize(5);
-	glVertex2f(clickX,clickY);
-	/*glBegin(GL_LINE_LOOP);
-
-	glVertex2f(-0.5, 0.5);
-	glVertex2f(0.5, 0.5);
-	glVertex2f(0.5, -0.5);
-	glVertex2f(-0.5, -0.5);*/
-	glEnd();
+	AC.Draw();
 
 	glFlush();
 	SwapBuffers(pDC->m_hDC);
@@ -114,22 +105,32 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point)
 	CRect rect;
 	GetClientRect(rect);
 
-	clickX =(double)point.x/ (double)rect.Width();
-	clickY = (double)point.y/ (double)rect.Height();
+	float hi;
+	float w = rect.Width();
+	float h = rect.Height();
 
-	clickY = (clickY - 1)*-1;
-	clickX = clickX * 2 - 1;
-	clickY = clickY * 2 - 1;
+	clickX = (float)point.x/w;
+	clickY = 1-(float)point.y/h;
 
-	double hi;
-	if (rect.Width() > rect.Height()) {
-		hi = (double)rect.Width() / rect.Height();
-		clickX = clickX * hi;
+	if (w > h)
+	{
+		hi = (float)w / h;
+		clickX = (float)clickX * 2 - 1;
+		clickX = (float)clickX * hi;
+		clickY = (float)clickY * 2 - 1;
+		glOrtho(-1 * hi,1*hi, -1, 1, -100, 100);
 	}
-	else {
-		hi = (double)rect.Height() / rect.Width();
-		clickY = clickY * hi;
+	else
+	{
+		hi = (float)h / w;
+		clickX = (float)clickX * 2 - 1;
+		clickX = (float)clickY * 2 - 1;
+		clickY = (float)clickY *hi;
+		glOrtho(-1, 1, -1 * hi, 1 * hi, -100, 100);
 	}
+
+	AC.AppendShape();
+	AC.Append_vertex(clickX, clickY);
 
 	RedrawWindow();
 
