@@ -129,8 +129,9 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point)
 		glOrtho(-1, 1, -1 * hi, 1 * hi, -100, 100);
 	}
 
-	AC.AppendShape();
-	AC.Append_vertex(clickX, clickY);
+	AC.CreateShape(clickX, clickY);
+	//AC.AppendShape();
+	//AC.Append_vertex(clickX, clickY);
 
 	RedrawWindow();
 

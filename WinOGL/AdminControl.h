@@ -11,11 +11,13 @@ public:
 	void AppendShape();
 	//CVertex* AppendVertex(float x, float y);
 
-	void Append_vertex(float x, float y);
+	void CreateShape(float x, float y);
 private:
 	//　頂点リストのヘッド
 	CShape* shape_head = NULL;
 	//　動的確保したVertexを解放する
 	void FreeShape();
+
+	CShape CS;
 };
 

@@ -73,7 +73,26 @@ void CAdminControl::AppendShape()
 	}
 }
 
-void CAdminControl::Append_vertex(float x, float y) {
-	shape_head->AppendVertex(x,y);
+void CAdminControl::CreateShape(float x, float y) {
+	AppendShape();
+	shape_head->AppendVertex(x, y);
+
+	if (CS.GetVertexhead() != NULL)
+	{
+		CVertex* pre_vp = NULL;
+		for (CVertex* vp = CS.GetVertexhead(); vp != NULL; vp = vp->GetNext())
+		{
+			CVertex* del = vp;
+			int xp = vp->GetX();
+			int yp = vp->GetY();
+			float dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
+			if (dis <= 10.0)
+			{
+				AppendShape();
+				shape_head->AppendVertex(xp, yp);
+			}
+			pre_vp = vp;
+		}
+	}
 }
 
