@@ -6,6 +6,12 @@ CShape::CShape()
 
 }
 
+CShape::CShape(CVertex* new_vertexhead)
+{
+	vertex_head = new_vertexhead;
+}
+
+
 CShape::~CShape()
 {
 	FreeVertex();
@@ -19,6 +25,21 @@ void CShape::SetVertexhead(CVertex*new_vertexhead)
 CVertex* CShape::GetVertexhead()
 {
 	return vertex_head;
+}
+
+CShape* CShape::Getpreshape()
+{
+	return pre_shape;
+}
+
+void CShape::Setpreshape(CShape* new_pre)
+{
+	pre_shape = new_pre;
+}
+
+CVertex* CShape::Getvertexfinal()
+{
+	return vertex_final;
 }
 
 void CShape::SetNext(CShape* new_next)
@@ -50,14 +71,22 @@ void CShape::AppendVertex(float new_x, float new_y)
 	if (vertex_head == NULL)
 	{
 		vertex_head = New_Vertex;
+		vertex_final= New_Vertex;
 	}
 	else
 	{
-		CVertex* vp = vertex_head;
-		while (vp->GetNext() != NULL)
-		{
-			vp = vp->GetNext();
-		}
-		vp->SetNext(New_Vertex);
+		New_Vertex->Setpre(vertex_final);
+		vertex_final->SetNext(New_Vertex);
+		vertex_final = New_Vertex;
 	}
+}
+
+int CShape::Count()
+{
+	int count=0;
+	for (CVertex* vp = vertex_head; vp != NULL;vp=vp->GetNext()) 
+	{
+		count++;
+	}
+	return count;
 }

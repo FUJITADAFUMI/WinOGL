@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "AdminControl.h"
+#include <math.h>
 
 CAdminControl::CAdminControl()
 {
@@ -27,12 +28,22 @@ void CAdminControl::Draw()
 	glEnd();
 
 
-	for (CShape* cs = shape_head; cs != NULL; cs = cs->GetNext()) {
+	if (shape_final != NULL) {
 		glBegin(GL_LINE_STRIP);
-		for (CVertex* cv = cs->GetVertexhead(); cv != NULL; cv = cv->GetNext()) {
+		for (CVertex* cv = shape_final->GetVertexhead(); cv != NULL; cv = cv->GetNext()) {
 			glVertex2f(cv->GetX(), cv->GetY());
 		}
 		glEnd();
+	}
+
+	if (shape_head != NULL) {
+		for (CShape* cs = shape_head; cs->GetNext() != NULL; cs = cs->GetNext()) {
+			glBegin(GL_LINE_LOOP);
+			for (CVertex* cv = cs->GetVertexhead(); cv != NULL; cv = cv->GetNext()) {
+				glVertex2f(cv->GetX(), cv->GetY());
+			}
+			glEnd();
+		}
 	}
 	
 	/*glBegin(GL_LINE_LOOP);
@@ -61,38 +72,54 @@ void CAdminControl::AppendShape()
 	if (shape_head == NULL)
 	{
 		shape_head = New_Shape;
+		shape_final = New_Shape;
 	}
 	else
 	{
-		CShape* cs = shape_head;
+		New_Shape->Setpreshape(shape_final);
+		shape_final->SetNext(New_Shape);
+		shape_final = New_Shape;
+		/*CShape* cs = shape_head;
 		while (cs->GetNext() != NULL)
 		{
 			cs = cs->GetNext();
 		}
-		cs->SetNext(New_Shape);
+		cs->SetNext(New_Shape);*/
 	}
 }
 
 void CAdminControl::CreateShape(float x, float y) {
-	AppendShape();
-	shape_head->AppendVertex(x, y);
-
-	if (CS.GetVertexhead() != NULL)
+	if (shape_head != NULL)
 	{
-		CVertex* pre_vp = NULL;
-		for (CVertex* vp = CS.GetVertexhead(); vp != NULL; vp = vp->GetNext())
+		CShape* cv = shape_final;
+		if (cv->Count()<3)
 		{
-			CVertex* del = vp;
-			int xp = vp->GetX();
-			int yp = vp->GetY();
-			float dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
-			if (dis <= 10.0)
-			{
-				AppendShape();
-				shape_head->AppendVertex(xp, yp);
-			}
-			pre_vp = vp;
+			//AppendShape();
+			shape_final->AppendVertex(x, y);
 		}
+		else
+		{
+			CVertex* vp= shape_final->GetVertexhead();
+			float xp = vp->GetX();
+			float yp = vp->GetY();
+			float dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
+			if (dis <= 0.1)
+			{
+				//AppendShape();
+				//shape_head->AppendVertex(xp, yp);
+				AppendShape();
+			}
+			else
+			{
+				//AppendShape();
+				shape_final->AppendVertex(x, y);
+			}
+		}
+	}
+	else
+	{
+		AppendShape();
+		shape_head->AppendVertex(x, y);
 	}
 }
 

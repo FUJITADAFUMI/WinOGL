@@ -12,7 +12,9 @@ private:
 	//　頂点のY座標
 	float y;
 	//　次の頂点リストを指すポインタ
-	CVertex* next_vertex;
+	CVertex* next_vertex = NULL;
+	//　前の頂点リストを指すポインタ
+	CVertex* pre_vertex = NULL;
 public:
 	//　頂点のX座標を書き込む
 	void SetX(float new_x);
@@ -30,5 +32,9 @@ public:
 	void SetNext(CVertex* new_next);
 	//　次の頂点リストを指すポインタを読み込む
 	CVertex* GetNext();
+
+	//　頂点のX・Y座標の両方を書き込む
+	CVertex* Getpre();
+	void Setpre(CVertex* new_pre);
 };
 

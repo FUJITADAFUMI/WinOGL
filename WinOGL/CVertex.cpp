@@ -79,3 +79,13 @@ CVertex* CVertex::GetNext()
 {
 	return next_vertex;
 }
+
+CVertex* CVertex::Getpre()
+{
+	return pre_vertex;
+}
+
+void CVertex::Setpre(CVertex* new_pre)
+{
+	pre_vertex = new_pre;
+}
