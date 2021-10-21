@@ -93,9 +93,19 @@ void CAdminControl::CreateShape(float x, float y) {
 	{
 		CShape* cv = shape_final;
 		if (cv->Count()<3)
-		{
+		{	
+			//Œð·”»’è
+			if (cv->Count() >= 1 && cv->cross_other(x,y, shape_head)) {
+				
+			}
+			else
+			{
+				shape_final->AppendVertex(x, y);
+			}
+			
+			
+
 			//AppendShape();
-			shape_final->AppendVertex(x, y);
 		}
 		else
 		{
@@ -107,17 +117,33 @@ void CAdminControl::CreateShape(float x, float y) {
 			{
 				//AppendShape();
 				//shape_head->AppendVertex(xp, yp);
-				AppendShape();
+				//Œð·”»’è
+				if (cv->cross(x,y)|| cv->cross_other(x, y, shape_head) ) {
+					
+				}
+				else
+				{
+					AppendShape();
+				}
+					
 			}
 			else
 			{
 				//AppendShape();
-				shape_final->AppendVertex(x, y);
+				//Œð·”»’è
+				if (cv->cross(x,y) ||cv->cross_other(x, y, shape_head) ) {
+					
+				}
+				else
+				{
+					shape_final->AppendVertex(x, y);
+				}
 			}
 		}
 	}
 	else
 	{
+
 		AppendShape();
 		shape_head->AppendVertex(x, y);
 	}

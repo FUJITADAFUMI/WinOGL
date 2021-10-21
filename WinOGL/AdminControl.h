@@ -2,6 +2,7 @@
 #include<gl/GL.h>
 #include"CVertex.h"
 #include"CShape.h"
+#include"Math.h"
 class CAdminControl
 {
 public:
@@ -16,6 +17,7 @@ public:
 
 private:
 	//　頂点リストのヘッド
+	Math* math = NULL;
 	CShape* shape_head = NULL;
 	CShape* shape_final = NULL;
 	//　動的確保したVertexを解放する
