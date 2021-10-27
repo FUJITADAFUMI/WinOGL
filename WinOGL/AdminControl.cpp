@@ -89,49 +89,44 @@ void CAdminControl::AppendShape()
 }
 
 void CAdminControl::CreateShape(float x, float y) {
+	CVertex nowv;
+	nowv.SetXY(x, y);
 	if (shape_head != NULL)
 	{
 		CShape* cv = shape_final;
 		if (cv->Count()<3)
 		{	
 			//Œð·”»’è
-			if (cv->Count() >= 1 && cv->cross_other(x,y, shape_head)) {
+			if (cv->Count() >= 1 && cv->cross_other(&nowv, shape_head)) {
 				
 			}
 			else
 			{
-				shape_final->AppendVertex(x, y);
+				
+				if (cv->inout_judge(&nowv, shape_head) == false) {
+					shape_final->AppendVertex(x, y);
+				}
 			}
-			
-			
-
 			//AppendShape();
 		}
+
 		else
 		{
 			CVertex* vp= shape_final->GetVertexhead();
 			float xp = vp->GetX();
 			float yp = vp->GetY();
 			float dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
-			if (dis <= 0.1)
-			{
-				//AppendShape();
-				//shape_head->AppendVertex(xp, yp);
-				//Œð·”»’è
-				if (cv->cross(x,y)|| cv->cross_other(x, y, shape_head) ) {
-					
-				}
-				else
-				{
-					AppendShape();
-				}
-					
+			if (cv->cross(&nowv) || cv->cross_other(&nowv, shape_head)) {
+			
 			}
 			else
 			{
-				//AppendShape();
-				//Œð·”»’è
-				if (cv->cross(x,y) ||cv->cross_other(x, y, shape_head) ) {
+
+				if (dis <= 0.1&& !cv->cross_last(&nowv))
+				{
+					if (cv->inout_zu_judge(shape_head, shape_final)==false) {
+						AppendShape();
+					}
 					
 				}
 				else
@@ -143,9 +138,10 @@ void CAdminControl::CreateShape(float x, float y) {
 	}
 	else
 	{
-
-		AppendShape();
-		shape_head->AppendVertex(x, y);
+		
+			AppendShape();
+			shape_head->AppendVertex(x, y);
+		
 	}
 }
 

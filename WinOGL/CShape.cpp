@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "CShape.h"
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 CShape::CShape()
 {
@@ -92,29 +94,23 @@ int CShape::Count()
 }
 
 //交差判定
-boolean CShape::cross_judge(CVertex* v1s, CVertex* v1e, CVertex* v2s,float new_x, float new_y)
+boolean CShape::cross_judge(CVertex* v1s, CVertex* v1e, CVertex* v2s, CVertex* v2e/*float new_x, float new_y*/)
 {
 	CVertex a, b, a1, b1, a2, b2;
 	float ca1, ca2, cb1, cb2;
 	
 	//a
-	a.SetX(v1e->GetX() - v1s->GetX());
-	a.SetY(v1e->GetY() - v1s->GetY());
+	a=math.calc_vertex(v1e, v1s);
 	//b
-	b.SetX(new_x - v2s->GetX());
-	b.SetY(new_y - v2s->GetY());
+	b = math.calc_vertex(v2e, v2s);
 	//a1
-	a1.SetX(v2s->GetX() - v1s->GetX());
-	a1.SetY(v2s->GetY() - v1s->GetY());
+	a1 = math.calc_vertex(v2s, v1s);
 	//b1
-	b1.SetX(v1s->GetX() - v2s->GetX());
-	b1.SetY(v1s->GetY() - v2s->GetY());
+	b1 = math.calc_vertex(v1s, v2s);
 	//a2
-	a2.SetX(new_x - v1s->GetX());
-	a2.SetY(new_y - v1s->GetY());
+	a2 = math.calc_vertex(v2e, v1s);
 	//b2
-	b2.SetX(v1e->GetX() - v2s->GetX());
-	b2.SetY(v1e->GetY() - v2s->GetY());
+	b2 = math.calc_vertex(v1e, v2s);
 
 	ca1 = a.GetX() * a1.GetY() - a1.GetX() * a.GetY();
 	ca2 = a.GetX() * a2.GetY() - a2.GetX() * a.GetY();
@@ -128,58 +124,118 @@ boolean CShape::cross_judge(CVertex* v1s, CVertex* v1e, CVertex* v2s,float new_x
 	return false;
 }
 
-
-boolean CShape::cross(/*CVertex* */float new_x, float new_y) {
+//自己交差
+boolean CShape::cross(CVertex* Be) {
 	CVertex* As = vertex_head;
 	CVertex* Ae = As->GetNext();
-	CVertex* Bs = Ae->GetNext();
-
-	while (Bs->GetNext() != NULL)
-	{
-		Bs = Bs->GetNext();
-	}
-
-	/*if (As->GetX() == new_x && As->GetY() == new_y)  //始点と終点が同じ場合
-	{
-		As = Ae;
-		Ae = Ae->GetNext();
-	}*/
+	CVertex* Bs = vertex_final;
 
 	while (Ae != Bs) {
 
-		if (cross_judge(As, Ae, Bs, new_x, new_y)) {
+		if (cross_judge(As, Ae, Bs, Be)) {
 			return true;
 		}
-
 		As = Ae;
 		Ae = Ae->GetNext();
 	}
+	
+
 
 	return false;
 }
 
-/*(CVertex* v1s, CVertex* v1e, CVertex* v2s, CVertex* v2e)
-{
-	if (v1s->GetX() == v2e->GetX() && v1s->GetY() == v2e->GetY())  //始点と終点が同じ場合
-	{
-		v1s = v2e;
-		v2e = v2e->GetNext();
-	}
+boolean CShape::cross_last(CVertex* Be) {
+	CVertex* As = vertex_head->GetNext();
+	CVertex* Ae = As->GetNext();
+	CVertex* Bs = vertex_final;
 
-	while (v1e != v2s) {
+	while (Ae != Bs) {
 
-		if (cross_judge(v1s, v1e, v2s, v2e)) {
+		if (cross_judge(As, Ae, Be, vertex_head)) {
 			return true;
 		}
-
-		v1s = v1e;
-		v1e = v1e->GetNext();
+		As = Ae;
+		Ae = Ae->GetNext();
 	}
 
-	return false;
-}*/
 
-boolean CShape::cross_other(float new_x, float new_y, CShape* shape_head) {
+
+	return false;
+}
+
+//点が内部にあるか
+boolean CShape::inout_judge(CVertex* Be, CShape* shape_head)
+{
+	float all=0;
+	CShape* nowS = shape_head;
+	CVertex* As;
+	CVertex* Ae;
+	while (nowS->GetNext() != NULL) {
+		As = nowS->GetVertexhead();
+		Ae = As->GetNext();
+		while (Ae != NULL) {
+			all=all+ math.substend_angle(As,Ae,Be);
+			As = Ae;
+			Ae = Ae->GetNext();
+		}
+		all = all + math.substend_angle(nowS->Getvertexfinal(),nowS->GetVertexhead(), Be);
+		if (all<0) {
+			all = all * -1;
+		}
+
+		if (2 * M_PI - all < 0.0001) {
+			return true;
+		}
+		nowS = nowS->GetNext();
+		all = 0;
+	}
+	
+	return false;
+
+}
+
+//図形が内部にあるか
+boolean CShape::inout_zu_judge(CShape* shape_head, CShape* shape_final)
+{
+	float all = 0;
+	CShape* nowS = shape_head;
+	CShape* nowE = shape_final;
+	CVertex* As;
+	CVertex* Bs;
+	CVertex* Be;
+	if(nowE== NULL) {
+		return false;
+	}
+	while (nowS->GetNext() != NULL) {
+		As = nowS->GetVertexhead();	
+		while (As != NULL) {
+			Bs = nowE->GetVertexhead();
+			Be = Bs->GetNext();
+			while (Be!=NULL) {
+				all = all + math.substend_angle(Bs, Be, As);
+				Bs = Be;
+				Be = Be->GetNext();
+			}
+			all = all + math.substend_angle(nowE->Getvertexfinal(), nowE->GetVertexhead(), As);
+			if (all < 0) {
+				all = all * -1;
+			}
+
+			if (2 * M_PI - all < 0.0001) {
+				return true;
+			}
+			else {
+				all = 0;
+			}
+			As = As->GetNext();
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
+
+//他交差
+boolean CShape::cross_other(CVertex* Be, CShape* shape_head) {
 	CShape* nowS= shape_head;
 	CVertex* As;
 	CVertex* Ae;
@@ -193,47 +249,21 @@ boolean CShape::cross_other(float new_x, float new_y, CShape* shape_head) {
 		Ae = As->GetNext();
 		while (Ae != NULL) {
 
-			if (cross_judge(As, Ae, Bs, new_x, new_y)) {
+			if (cross_judge(As, Ae, Bs, Be)) {
 				return true;
 			}
 
 			As = Ae;
 			Ae = Ae->GetNext();
 		}
+		if (cross_judge(nowS->GetVertexhead(), nowS->Getvertexfinal(), Bs, Be)) {
+			return true;
+		}
+
 
 		nowS = nowS->GetNext();
 	}
 
 	return false;
 }
-/*
-(CVertex* v2s, CVertex* v2e, CShape* shs, CShape* she)
-{
-	CShape* nowS;
-	CVertex* v1s;
-	CVertex* v1e;
 
-	if (she == NULL)
-	{
-		return false;
-	}
-
-	while (shs != she) {
-		v1s = shs->GetVertexhead();
-		v1e = v1s->GetNext();
-		while (v1e != NULL) {
-
-			if (cross_judge(v1s, v1e, v2s, v2e)) {
-				return true;
-			}
-
-			v1s = v1e;
-			v1e = v1e->GetNext();
-		}
-
-		shs = shs->GetNext();
-	}
-
-	return false;
-}
-*/
