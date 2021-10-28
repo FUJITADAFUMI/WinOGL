@@ -183,7 +183,7 @@ boolean CShape::inout_judge(CVertex* Be, CShape* shape_head)
 			all = all * -1;
 		}*/
 
-		if (2 * M_PI - all < 0.01 && 2 * M_PI - all >-0.01) {
+		if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
 			return true;
 		}
 		nowS = nowS->GetNext();
@@ -223,7 +223,7 @@ boolean CShape::inout_zu_judge(CShape* shape_head, CShape* shape_final)
 				all = all * -1;
 			}*/
 
-			if (2 * M_PI - all < 0.01&& 2 * M_PI - all >- 0.01) {
+			if (2 * M_PI - all < 0.1&& 2 * M_PI - all >- 0.1) {
 				return true;
 			}
 			else {

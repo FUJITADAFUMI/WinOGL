@@ -50,9 +50,9 @@ float Math::substend_angle(CVertex* p1, CVertex* p2, CVertex* nowp)
 	float in= inner_product(vec1,vec2);
 	float cr= cross_product(vec1,vec2);
 
-	if (cr<0) {
+	/*if (cr<0) {
 		cr = cr * -1;
-	}
+	}*/
 	sa = atan2(cr,in);
 	return sa;
 }
