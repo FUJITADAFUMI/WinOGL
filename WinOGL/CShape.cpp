@@ -179,11 +179,11 @@ boolean CShape::inout_judge(CVertex* Be, CShape* shape_head)
 			Ae = Ae->GetNext();
 		}
 		all = all + math.substend_angle(nowS->Getvertexfinal(),nowS->GetVertexhead(), Be);
-		if (all<0) {
+		/*if (all<0) {
 			all = all * -1;
-		}
+		}*/
 
-		if (2 * M_PI - all < 0.0001) {
+		if (2 * M_PI - all < 0.01 && 2 * M_PI - all >-0.01) {
 			return true;
 		}
 		nowS = nowS->GetNext();
@@ -200,12 +200,14 @@ boolean CShape::inout_zu_judge(CShape* shape_head, CShape* shape_final)
 	float all = 0;
 	CShape* nowS = shape_head;
 	CShape* nowE = shape_final;
+	//Žn“_
 	CVertex* As;
+	//ShapeÅŒã‚Ì“_
 	CVertex* Bs;
 	CVertex* Be;
-	if(nowE== NULL) {
+	/*if(nowE== NULL) {
 		return false;
-	}
+	}*/
 	while (nowS->GetNext() != NULL) {
 		As = nowS->GetVertexhead();	
 		while (As != NULL) {
@@ -217,16 +219,17 @@ boolean CShape::inout_zu_judge(CShape* shape_head, CShape* shape_final)
 				Be = Be->GetNext();
 			}
 			all = all + math.substend_angle(nowE->Getvertexfinal(), nowE->GetVertexhead(), As);
-			if (all < 0) {
+			/*if (all < 0) {
 				all = all * -1;
-			}
+			}*/
 
-			if (2 * M_PI - all < 0.0001) {
+			if (2 * M_PI - all < 0.01&& 2 * M_PI - all >- 0.01) {
 				return true;
 			}
 			else {
 				all = 0;
 			}
+
 			As = As->GetNext();
 		}
 		nowS = nowS->GetNext();

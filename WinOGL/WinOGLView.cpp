@@ -28,6 +28,7 @@ BEGIN_MESSAGE_MAP(CWinOGLView, CView)
 	ON_WM_DESTROY()
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZE()
+	ON_COMMAND(ID_XYZ, &CWinOGLView::OnXyz)
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -217,4 +218,15 @@ void CWinOGLView::OnSize(UINT nType, int cx, int cy)
 
 	RedrawWindow();
 	wglMakeCurrent(clientDC.m_hDC, NULL);
+}
+
+
+void CWinOGLView::OnXyz()
+{
+	// TODO: ここにコマンド ハンドラー コードを追加します。
+	/*--------------------------------------------------------*/
+/* CAdminControlクラスのメンバ変数AxisFlagの状態を切り替える
+*/
+/*--------------------------------------------------------*/
+	RedrawWindow();
 }

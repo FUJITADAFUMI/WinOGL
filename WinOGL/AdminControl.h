@@ -23,5 +23,8 @@ private:
 	//@“®“IŠm•Û‚µ‚½Vertex‚ğ‰ğ•ú‚·‚é
 	void FreeShape();
 
+public:
+	void DrawAxis(void);
+	bool AxisFlag;
 };
 

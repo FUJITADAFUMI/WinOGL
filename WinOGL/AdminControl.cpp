@@ -145,3 +145,23 @@ void CAdminControl::CreateShape(float x, float y) {
 	}
 }
 
+
+
+void CAdminControl::DrawAxis(void)
+{
+	// TODO: Ç±Ç±Ç…é¿ëïÉRÅ[ÉhÇí«â¡ÇµÇ‹Ç∑.
+	glBegin(GL_LINES);
+	// xé≤
+	glColor3f(1.0, 0.0, 0.0);
+	glVertex3f(-1.0, 0.0, 0.0);
+	glVertex3f(1.0, 0.0, 0.0);
+	// yé≤
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex3f(0.0, -1.0, 0.0);
+	glVertex3f(0.0, 1.0, 0.0);
+	// zé≤
+	glColor3f(0.0, 0.0, 1.0);
+	glVertex3f(0.0, 0.0, -1.0);
+	glVertex3f(0.0, 0.0, 1.0);
+	glEnd();
+}
