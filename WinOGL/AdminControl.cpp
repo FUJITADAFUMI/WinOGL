@@ -52,6 +52,13 @@ void CAdminControl::Draw()
 	glVertex2f(0.5, 0.5);
 	glVertex2f(0.5, -0.5);
 	glVertex2f(-0.5, -0.5);*/
+	// AxisFlagがtrueのとき座標軸を描画する
+	if (AxisFlag) {
+		DrawAxis();
+	}
+	if (VertexFlag) {
+		VertexChoice(useX(), useY());
+	}
 }
 
 void CAdminControl::FreeShape()
@@ -91,63 +98,116 @@ void CAdminControl::AppendShape()
 void CAdminControl::CreateShape(float x, float y) {
 	CVertex nowv;
 	nowv.SetXY(x, y);
-	if (shape_head != NULL)
-	{
-		CShape* cv = shape_final;
-		if (cv->Count()<3)
-		{	
-			//交差判定
-			if (cv->Count() >= 1 && cv->cross_other(&nowv, shape_head)) {
-				
-			}
-			else
-			{
-				
-				if (cv->inout_judge(&nowv, shape_head) == false) {
-					shape_final->AppendVertex(x, y);
-				}
-			}
-			//AppendShape();
-		}
-
-		else
+	
+		if (shape_head != NULL)
 		{
-			CVertex* vp= shape_final->GetVertexhead();
-			float xp = vp->GetX();
-			float yp = vp->GetY();
-			float dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
-			if (cv->cross(&nowv) || cv->cross_other(&nowv, shape_head)) {
-			
-			}
-			else
+			CShape* cv = shape_final;
+			if (cv->Count() < 3)
 			{
+				//交差判定
+				if (cv->Count() >= 1 && cv->cross_other(&nowv, shape_head)) {
 
-				if (dis <= 0.1&& !cv->cross_last(&nowv))
-				{
-					if (cv->inout_zu_judge(shape_head, shape_final)==false) {
-						AppendShape();
-					}
-					
 				}
 				else
 				{
-					shape_final->AppendVertex(x, y);
+
+					if (cv->inout_judge(&nowv, shape_head) == false) {
+						shape_final->AppendVertex(x, y);
+					}
+				}
+				//AppendShape();
+			}
+
+			else
+			{
+				CVertex* vp = shape_final->GetVertexhead();
+				float xp = vp->GetX();
+				float yp = vp->GetY();
+				float dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
+				if (cv->cross(&nowv) || cv->cross_other(&nowv, shape_head)) {
+
+				}
+				else
+				{
+
+					if (dis <= 0.1 && !cv->cross_last(&nowv))
+					{
+						if (cv->inout_zu_judge(shape_head, shape_final) == false) {
+							AppendShape();
+						}
+
+					}
+					else
+					{
+						shape_final->AppendVertex(x, y);
+					}
 				}
 			}
 		}
-	}
-	else
-	{
-		
+		else
+		{
+
 			AppendShape();
 			shape_head->AppendVertex(x, y);
-		
+
+		}
+	
+}
+
+void CAdminControl::SetAxisFlag()
+{
+	if (AxisFlag == true) {
+		AxisFlag = false;
+	}
+	else {
+		AxisFlag = true;
 	}
 }
 
+bool CAdminControl::GetAxisFlag()
+{
+	return AxisFlag;
+}
 
+void CAdminControl::SetVertexFlag()
+{
+	if (shape_head==NULL) {
+		VertexFlag = false;
+	}
+	else if (VertexFlag == false&& shape_final->GetVertexhead()==NULL) {
+		VertexFlag = true;
+	}
+	else {
+		VertexFlag = false;
+	}
+}
 
-void CAdminControl::DrawAxis(void)
+bool CAdminControl::GetVertexFlag()
+{
+	return VertexFlag;
+}
+
+void CAdminControl::SelX(float x)
+{
+	X = x;
+}
+
+void CAdminControl::SelY(float y)
+{
+	Y = y;
+}
+
+float CAdminControl::useX()
+{
+	return X;
+}
+
+float CAdminControl::useY()
+{
+	return Y;
+}
+
+void CAdminControl::DrawAxis()
 {
 	// TODO: ここに実装コードを追加します.
 	glBegin(GL_LINES);
@@ -165,3 +225,32 @@ void CAdminControl::DrawAxis(void)
 	glVertex3f(0.0, 0.0, 1.0);
 	glEnd();
 }
+
+void CAdminControl::VertexChoice(float x, float y)
+{
+	CVertex nowv;
+	nowv.SetXY(x, y);
+	CShape *nowS = shape_head;
+	CVertex* nowV; 
+	float xp;
+	float yp;
+	float dis;
+	while (nowS->GetNext() != NULL) {
+		nowV=nowS->GetVertexhead();
+		while (nowV->GetNext()!=NULL) {
+			xp = nowV->GetX();
+			yp = nowV->GetY();
+			dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
+			if (dis <= 0.1) {
+				glColor3f(255, 0, 0);
+				glPointSize(10);
+				glBegin(GL_POINTS);
+				glVertex2f(xp,yp);
+				glEnd();
+			}
+			nowV = nowV->GetNext();
+		}
+		nowS = nowS->GetNext();
+	}
+}
+

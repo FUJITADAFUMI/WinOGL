@@ -29,6 +29,9 @@ BEGIN_MESSAGE_MAP(CWinOGLView, CView)
 	ON_WM_ERASEBKGND()
 	ON_WM_SIZE()
 	ON_COMMAND(ID_XYZ, &CWinOGLView::OnXyz)
+	ON_COMMAND(ID_vtchoice, &CWinOGLView::Onvtchoice)
+	ON_UPDATE_COMMAND_UI(ID_XYZ, &CWinOGLView::OnUpdateXyz)
+	ON_UPDATE_COMMAND_UI(ID_vtchoice, &CWinOGLView::OnUpdatevtchoice)
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -131,6 +134,8 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 
 	AC.CreateShape(clickX, clickY);
+	AC.SelX(clickX);
+	AC.SelY(clickY);
 	//AC.AppendShape();
 	//AC.Append_vertex(clickX, clickY);
 
@@ -228,5 +233,39 @@ void CWinOGLView::OnXyz()
 /* CAdminControlクラスのメンバ変数AxisFlagの状態を切り替える
 */
 /*--------------------------------------------------------*/
+	AC.SetAxisFlag();
 	RedrawWindow();
+}
+
+
+
+void CWinOGLView::Onvtchoice()
+{
+	// TODO: ここにコマンド ハンドラー コードを追加します。
+	AC.SetVertexFlag();
+	RedrawWindow();
+}
+
+
+void CWinOGLView::OnUpdateXyz(CCmdUI* pCmdUI)
+{
+	// TODO:ここにコマンド更新 UI ハンドラー コードを追加します。
+	if (AC.GetAxisFlag()) {
+		pCmdUI->SetCheck(true);
+	}
+	else {
+		pCmdUI->SetCheck(false);
+	}
+}
+
+
+void CWinOGLView::OnUpdatevtchoice(CCmdUI* pCmdUI)
+{
+	// TODO:ここにコマンド更新 UI ハンドラー コードを追加します。
+	if (AC.GetVertexFlag()) {
+		pCmdUI->SetCheck(true);
+	}
+	else {
+		pCmdUI->SetCheck(false);
+	}
 }

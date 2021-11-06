@@ -54,6 +54,9 @@ private:
 	CAdminControl AC;
 public:
 	afx_msg void OnXyz();
+	afx_msg void Onvtchoice();
+	afx_msg void OnUpdateXyz(CCmdUI* pCmdUI);
+	afx_msg void OnUpdatevtchoice(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // WinOGLView.cpp のデバッグ バージョン
