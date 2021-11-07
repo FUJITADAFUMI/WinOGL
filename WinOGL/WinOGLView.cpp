@@ -32,6 +32,8 @@ BEGIN_MESSAGE_MAP(CWinOGLView, CView)
 	ON_COMMAND(ID_vtchoice, &CWinOGLView::Onvtchoice)
 	ON_UPDATE_COMMAND_UI(ID_XYZ, &CWinOGLView::OnUpdateXyz)
 	ON_UPDATE_COMMAND_UI(ID_vtchoice, &CWinOGLView::OnUpdatevtchoice)
+	ON_COMMAND(ID_sfchoice, &CWinOGLView::Onsfchoice)
+	ON_UPDATE_COMMAND_UI(ID_sfchoice, &CWinOGLView::OnUpdatesfchoice)
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -134,8 +136,14 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 
 	AC.CreateShape(clickX, clickY);
-	AC.SelX(clickX);
-	AC.SelY(clickY);
+	if (AC.GetVertexFlag()) {
+		AC.SelX(clickX);
+		AC.SelY(clickY);
+	}
+	else if (AC.GetSurfaceFlag()) {
+		AC.SelX(clickX);
+		AC.SelY(clickY);
+	}
 	//AC.AppendShape();
 	//AC.Append_vertex(clickX, clickY);
 
@@ -263,6 +271,26 @@ void CWinOGLView::OnUpdatevtchoice(CCmdUI* pCmdUI)
 {
 	// TODO:ここにコマンド更新 UI ハンドラー コードを追加します。
 	if (AC.GetVertexFlag()) {
+		pCmdUI->SetCheck(true);
+	}
+	else {
+		pCmdUI->SetCheck(false);
+	}
+}
+
+
+void CWinOGLView::Onsfchoice()
+{
+	// TODO: ここにコマンド ハンドラー コードを追加します。
+	AC.SetSurfaceFlag();
+	RedrawWindow();
+}
+
+
+void CWinOGLView::OnUpdatesfchoice(CCmdUI* pCmdUI)
+{
+	// TODO:ここにコマンド更新 UI ハンドラー コードを追加します。
+	if (AC.GetSurfaceFlag()) {
 		pCmdUI->SetCheck(true);
 	}
 	else {

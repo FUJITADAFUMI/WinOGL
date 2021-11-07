@@ -59,6 +59,9 @@ void CAdminControl::Draw()
 	if (VertexFlag) {
 		VertexChoice(useX(), useY());
 	}
+	else if (SurfaceFlag) {
+		SurfaceChoice(useX(), useY());
+	}
 }
 
 void CAdminControl::FreeShape()
@@ -98,7 +101,7 @@ void CAdminControl::AppendShape()
 void CAdminControl::CreateShape(float x, float y) {
 	CVertex nowv;
 	nowv.SetXY(x, y);
-	
+	if (VertexFlag==false && SurfaceFlag == false) {
 		if (shape_head != NULL)
 		{
 			CShape* cv = shape_final;
@@ -151,9 +154,9 @@ void CAdminControl::CreateShape(float x, float y) {
 			shape_head->AppendVertex(x, y);
 
 		}
-	
+	}
 }
-
+//座標軸
 void CAdminControl::SetAxisFlag()
 {
 	if (AxisFlag == true) {
@@ -168,7 +171,7 @@ bool CAdminControl::GetAxisFlag()
 {
 	return AxisFlag;
 }
-
+//点選択
 void CAdminControl::SetVertexFlag()
 {
 	if (shape_head==NULL) {
@@ -186,7 +189,24 @@ bool CAdminControl::GetVertexFlag()
 {
 	return VertexFlag;
 }
-
+//面選択
+void CAdminControl::SetSurfaceFlag()
+{
+	if (shape_head == NULL) {
+		SurfaceFlag = false;
+	}
+	else if (SurfaceFlag == false && shape_final->GetVertexhead() == NULL) {
+		SurfaceFlag = true;
+	}
+	else {
+		SurfaceFlag = false;
+	}
+}
+bool CAdminControl::GetSurfaceFlag()
+{
+	return SurfaceFlag;
+}
+//現在点
 void CAdminControl::SelX(float x)
 {
 	X = x;
@@ -206,7 +226,7 @@ float CAdminControl::useY()
 {
 	return Y;
 }
-
+//座標軸描画
 void CAdminControl::DrawAxis()
 {
 	// TODO: ここに実装コードを追加します.
@@ -225,7 +245,7 @@ void CAdminControl::DrawAxis()
 	glVertex3f(0.0, 0.0, 1.0);
 	glEnd();
 }
-
+//点選択描画
 void CAdminControl::VertexChoice(float x, float y)
 {
 	CVertex nowv;
@@ -235,9 +255,9 @@ void CAdminControl::VertexChoice(float x, float y)
 	float xp;
 	float yp;
 	float dis;
-	while (nowS->GetNext() != NULL) {
+	while (nowS->GetNext()!= NULL) {
 		nowV=nowS->GetVertexhead();
-		while (nowV->GetNext()!=NULL) {
+		while (nowV!=NULL) {
 			xp = nowV->GetX();
 			yp = nowV->GetY();
 			dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
@@ -253,4 +273,50 @@ void CAdminControl::VertexChoice(float x, float y)
 		nowS = nowS->GetNext();
 	}
 }
-
+//面選択描画
+void CAdminControl::SurfaceChoice(float x, float y)
+{
+	float all = 0;
+	CVertex nowv;
+	nowv.SetXY(x, y);
+	CShape* nowS = shape_head;
+	CVertex* As;
+	CVertex* Ae;
+	CVertex* usev;
+	
+	while (nowS->GetNext() != NULL) {
+		As = nowS->GetVertexhead();
+		Ae = As->GetNext();
+		while (Ae != NULL) {
+			all = all + math.substend_angle(As, Ae, &nowv);
+			As = Ae;
+			Ae = Ae->GetNext();
+		}
+		all = all + math.substend_angle(nowS->Getvertexfinal(), nowS->GetVertexhead(), &nowv);
+		if (all < 0) {
+			all = all * -1;
+		}
+		if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+			glColor3f(255, 0, 0);
+			glPointSize(10);
+			glBegin(GL_POINTS);
+			As = nowS->GetVertexhead();
+			while (As!=NULL) {
+				glVertex2f(As->GetX(), As->GetY());
+				As = As->GetNext();
+			}
+			glEnd();
+			glBegin(GL_LINE_STRIP);
+			As = nowS->GetVertexhead();
+			while (As != NULL) {
+				glVertex2f(As->GetX(), As->GetY());
+				As = As->GetNext();
+			}
+			As = nowS->GetVertexhead();
+			glVertex2f(As->GetX(), As->GetY());
+			glEnd();
+		}
+		nowS = nowS->GetNext();
+		all = 0;
+	}
+}

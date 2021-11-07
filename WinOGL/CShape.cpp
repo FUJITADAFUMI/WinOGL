@@ -179,9 +179,9 @@ boolean CShape::inout_judge(CVertex* Be, CShape* shape_head)
 			Ae = Ae->GetNext();
 		}
 		all = all + math.substend_angle(nowS->Getvertexfinal(),nowS->GetVertexhead(), Be);
-		/*if (all<0) {
+		if (all<0) {
 			all = all * -1;
-		}*/
+		}
 
 		if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
 			return true;
@@ -219,9 +219,9 @@ boolean CShape::inout_zu_judge(CShape* shape_head, CShape* shape_final)
 				Be = Be->GetNext();
 			}
 			all = all + math.substend_angle(nowE->Getvertexfinal(), nowE->GetVertexhead(), As);
-			/*if (all < 0) {
+			if (all < 0) {
 				all = all * -1;
-			}*/
+			}
 
 			if (2 * M_PI - all < 0.1&& 2 * M_PI - all >- 0.1) {
 				return true;
