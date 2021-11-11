@@ -34,6 +34,8 @@ BEGIN_MESSAGE_MAP(CWinOGLView, CView)
 	ON_UPDATE_COMMAND_UI(ID_vtchoice, &CWinOGLView::OnUpdatevtchoice)
 	ON_COMMAND(ID_sfchoice, &CWinOGLView::Onsfchoice)
 	ON_UPDATE_COMMAND_UI(ID_sfchoice, &CWinOGLView::OnUpdatesfchoice)
+	ON_COMMAND(ID_edgechoice, &CWinOGLView::Onedgechoice)
+	ON_UPDATE_COMMAND_UI(ID_edgechoice, &CWinOGLView::OnUpdateedgechoice)
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -141,6 +143,10 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point)
 		AC.SelY(clickY);
 	}
 	else if (AC.GetSurfaceFlag()) {
+		AC.SelX(clickX);
+		AC.SelY(clickY);
+	}
+	else if (AC.GetEdgeFlag()) {
 		AC.SelX(clickX);
 		AC.SelY(clickY);
 	}
@@ -291,6 +297,26 @@ void CWinOGLView::OnUpdatesfchoice(CCmdUI* pCmdUI)
 {
 	// TODO:ここにコマンド更新 UI ハンドラー コードを追加します。
 	if (AC.GetSurfaceFlag()) {
+		pCmdUI->SetCheck(true);
+	}
+	else {
+		pCmdUI->SetCheck(false);
+	}
+}
+
+
+void CWinOGLView::Onedgechoice()
+{
+	// TODO: ここにコマンド ハンドラー コードを追加します。
+	AC.SetEdgeFlag();
+	RedrawWindow();
+}
+
+
+void CWinOGLView::OnUpdateedgechoice(CCmdUI* pCmdUI)
+{
+	// TODO:ここにコマンド更新 UI ハンドラー コードを追加します。
+	if (AC.GetEdgeFlag()) {
 		pCmdUI->SetCheck(true);
 	}
 	else {

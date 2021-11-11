@@ -62,6 +62,9 @@ void CAdminControl::Draw()
 	else if (SurfaceFlag) {
 		SurfaceChoice(useX(), useY());
 	}
+	else if (EdgeFlag) {
+		EdgeChoice(useX(), useY());
+	}
 }
 
 void CAdminControl::FreeShape()
@@ -97,11 +100,11 @@ void CAdminControl::AppendShape()
 		cs->SetNext(New_Shape);*/
 	}
 }
-
+//基本機能
 void CAdminControl::CreateShape(float x, float y) {
 	CVertex nowv;
 	nowv.SetXY(x, y);
-	if (VertexFlag==false && SurfaceFlag == false) {
+	if (VertexFlag==false && SurfaceFlag == false&& EdgeFlag == false) {
 		if (shape_head != NULL)
 		{
 			CShape* cv = shape_final;
@@ -174,7 +177,7 @@ bool CAdminControl::GetAxisFlag()
 //点選択
 void CAdminControl::SetVertexFlag()
 {
-	if (shape_head==NULL) {
+	if (shape_head==NULL || SurfaceFlag == true || EdgeFlag == true) {
 		VertexFlag = false;
 	}
 	else if (VertexFlag == false&& shape_final->GetVertexhead()==NULL) {
@@ -192,7 +195,7 @@ bool CAdminControl::GetVertexFlag()
 //面選択
 void CAdminControl::SetSurfaceFlag()
 {
-	if (shape_head == NULL) {
+	if (shape_head == NULL|| VertexFlag == true||EdgeFlag==true) {
 		SurfaceFlag = false;
 	}
 	else if (SurfaceFlag == false && shape_final->GetVertexhead() == NULL) {
@@ -225,6 +228,23 @@ float CAdminControl::useX()
 float CAdminControl::useY()
 {
 	return Y;
+}
+//辺選択
+void CAdminControl::SetEdgeFlag()
+{
+	if (shape_head == NULL || SurfaceFlag == true|| VertexFlag == true) {
+		EdgeFlag = false;
+	}
+	else if (EdgeFlag == false && shape_final->GetVertexhead() == NULL) {
+		EdgeFlag = true;
+	}
+	else {
+		EdgeFlag = false;
+	}
+}
+bool CAdminControl::GetEdgeFlag()
+{
+	return EdgeFlag;
 }
 //座標軸描画
 void CAdminControl::DrawAxis()
@@ -261,7 +281,7 @@ void CAdminControl::VertexChoice(float x, float y)
 			xp = nowV->GetX();
 			yp = nowV->GetY();
 			dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
-			if (dis <= 0.1) {
+			if (dis <= 0.01) {
 				glColor3f(255, 0, 0);
 				glPointSize(10);
 				glBegin(GL_POINTS);
@@ -318,5 +338,66 @@ void CAdminControl::SurfaceChoice(float x, float y)
 		}
 		nowS = nowS->GetNext();
 		all = 0;
+	}
+}
+//辺選択描画
+void CAdminControl::EdgeChoice(float x, float y)
+{
+	// TODO: ここに実装コードを追加します.
+	CVertex nowv;
+	nowv.SetXY(x, y);
+	CShape* nowS = shape_head;
+	CVertex* As;
+	CVertex* Ae;
+	CVertex* usev;
+	//2点の距離
+	//(p-b)
+	float dis1 = 0;
+	//(a-q)
+	float dis2 = 0;
+	//(a-b)
+	float dis3 = 0;
+	//s+t=1
+	float s = 0;
+	float t = 0;
+
+	while (nowS->GetNext() != NULL) {
+		As = nowS->GetVertexhead();
+		Ae = As->GetNext();
+		while (Ae != NULL) {
+			dis1 = math.two_distance(*Ae,nowv);
+			dis2 = math.two_distance(nowv, *As);
+			dis3 = math.two_distance(*Ae, *As);
+			s = (dis1 * dis3) / (dis3 * dis3);
+			t = (dis2 * dis3) / (dis3 * dis3);
+			//s+t=1,0<=s<=1の判定
+			if (s+t<1.01 && s+t>0.99 && -0.01<s&&s<1.01) {
+				glColor3f(255, 0, 0);
+				glPointSize(10);
+				glBegin(GL_LINE_STRIP);
+				glVertex2f(As->GetX(), As->GetY());
+				glVertex2f(Ae->GetX(), Ae->GetY());
+				glEnd();
+			}
+			As = Ae;
+			Ae = Ae->GetNext();
+		}
+		As = nowS->Getvertexfinal();
+		Ae = nowS->GetVertexhead();
+		dis1 = math.two_distance(*Ae, nowv);
+		dis2 = math.two_distance(nowv, *As);
+		dis3 = math.two_distance(*Ae, *As);
+		s = (dis1 * dis3) / (dis3 * dis3);
+		t = (dis2 * dis3) / (dis3 * dis3);
+		//s+t=1,0<=s<=1の判定
+		if (s + t < 1.01 && s + t>0.99 && -0.01 < s && s < 1.01) {
+			glColor3f(255, 0, 0);
+			glPointSize(10);
+			glBegin(GL_LINE_STRIP);
+			glVertex2f(As->GetX(), As->GetY());
+			glVertex2f(Ae->GetX(), Ae->GetY());
+			glEnd();
+		}
+		nowS = nowS->GetNext();
 	}
 }

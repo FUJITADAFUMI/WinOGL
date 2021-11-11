@@ -30,6 +30,9 @@ public:
 	void SelY(float y);
 	float useX();
 	float useY();
+	//辺選択
+	void SetEdgeFlag();
+	bool GetEdgeFlag();
 
 private:
 	//　頂点リストのヘッド
@@ -51,5 +54,8 @@ private:
 	void SurfaceChoice(float x, float y);
 	bool SurfaceFlag=false;
 	Math math;
+	//辺選択
+	void EdgeChoice(float x, float y);
+	bool EdgeFlag = false;
 };
 

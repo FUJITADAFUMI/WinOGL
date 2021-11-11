@@ -59,6 +59,8 @@ public:
 	afx_msg void OnUpdatevtchoice(CCmdUI* pCmdUI);
 	afx_msg void Onsfchoice();
 	afx_msg void OnUpdatesfchoice(CCmdUI* pCmdUI);
+	afx_msg void Onedgechoice();
+	afx_msg void OnUpdateedgechoice(CCmdUI* pCmdUI);
 };
 
 #ifndef _DEBUG  // WinOGLView.cpp のデバッグ バージョン
