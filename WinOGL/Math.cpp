@@ -57,5 +57,30 @@ float Math::substend_angle(CVertex* p1, CVertex* p2, CVertex* nowp)
 	return sa;
 }
 
+//•Ó‘I‘ð”»’è
+bool Math::edgechoicejud(CVertex vec1, CVertex vec2, CVertex vec3)
+{
+	//2“_‚Ì‹——£
+	//(p-b)
+	float dis1 = 0;
+	//(a-q)
+	float dis2 = 0;
+	//(a-b)
+	float dis3 = 0;
+	//s+t=1
+	float s = 0;
+	float t = 0;
+	dis1 = two_distance(vec2, vec3);
+	dis2 = two_distance(vec3, vec1);
+	dis3 = two_distance(vec2, vec1);
+	s = (dis1 * dis3) / (dis3 * dis3);
+	t = (dis2 * dis3) / (dis3 * dis3);
+	//s+t=1,0<=s<=1‚Ì”»’è
+	if (s + t < 1.01 && s + t>0.99 && -0.01 < s && s < 1.01) {
+		return true;
+	}
+	return false;
+}
+
 
 

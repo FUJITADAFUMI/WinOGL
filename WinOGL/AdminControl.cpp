@@ -365,13 +365,7 @@ void CAdminControl::EdgeChoice(float x, float y)
 		As = nowS->GetVertexhead();
 		Ae = As->GetNext();
 		while (Ae != NULL) {
-			dis1 = math.two_distance(*Ae,nowv);
-			dis2 = math.two_distance(nowv, *As);
-			dis3 = math.two_distance(*Ae, *As);
-			s = (dis1 * dis3) / (dis3 * dis3);
-			t = (dis2 * dis3) / (dis3 * dis3);
-			//s+t=1,0<=s<=1‚Ì”»’è
-			if (s+t<1.01 && s+t>0.99 && -0.01<s&&s<1.01) {
+			if (math.edgechoicejud(*As, *Ae, nowv)) {
 				glColor3f(255, 0, 0);
 				glPointSize(10);
 				glBegin(GL_LINE_STRIP);
@@ -384,13 +378,7 @@ void CAdminControl::EdgeChoice(float x, float y)
 		}
 		As = nowS->Getvertexfinal();
 		Ae = nowS->GetVertexhead();
-		dis1 = math.two_distance(*Ae, nowv);
-		dis2 = math.two_distance(nowv, *As);
-		dis3 = math.two_distance(*Ae, *As);
-		s = (dis1 * dis3) / (dis3 * dis3);
-		t = (dis2 * dis3) / (dis3 * dis3);
-		//s+t=1,0<=s<=1‚Ì”»’è
-		if (s + t < 1.01 && s + t>0.99 && -0.01 < s && s < 1.01) {
+		if (math.edgechoicejud(*As, *Ae, nowv)) {
 			glColor3f(255, 0, 0);
 			glPointSize(10);
 			glBegin(GL_LINE_STRIP);
