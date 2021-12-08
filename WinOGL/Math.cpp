@@ -58,8 +58,9 @@ float Math::substend_angle(CVertex* p1, CVertex* p2, CVertex* nowp)
 }
 
 //•Ó‘I‘ð”»’è
-bool Math::edgechoicejud(CVertex vec1, CVertex vec2, CVertex vec3)
+float Math::edgechoicejud(CVertex vec1, CVertex vec2, CVertex vec3)
 {
+	float min;
 	//2“_‚Ì‹——£
 	//(p-b)
 	float dis1 = 0;
@@ -75,11 +76,33 @@ bool Math::edgechoicejud(CVertex vec1, CVertex vec2, CVertex vec3)
 	dis3 = two_distance(vec2, vec1);
 	s = (dis1 * dis3) / (dis3 * dis3);
 	t = (dis2 * dis3) / (dis3 * dis3);
+	Sets(s);
+	Sett(t);
 	//s+t=1,0<=s<=1‚Ì”»’è
 	if (s + t < 1.01 && s + t>0.99 && -0.01 < s && s < 1.01) {
-		return true;
+		return min= s + t;
 	}
-	return false;
+	return 2;
+}
+
+void Math::Sets(float s)
+{
+	S = s;
+}
+
+float Math::Gets()
+{
+	return S;
+}
+
+void Math::Sett(float t)
+{
+	T = t;
+}
+
+float Math::Gett()
+{
+	return T;
 }
 
 

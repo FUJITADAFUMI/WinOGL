@@ -33,6 +33,7 @@ public:
 	CShape* Getpreshape();
 	void Setpreshape(CShape* new_pre);
 	CVertex* Getvertexfinal();
+	void Setvertexfinal(CVertex* new_final);
 
     int Count();
 
@@ -42,6 +43,10 @@ public:
 	boolean cross_last(CVertex* Be);
 	boolean inout_judge(CVertex* Be, CShape* shape_head);
 	boolean inout_zu_judge(CShape* shape_head, CShape* shape_final);
+	boolean mvcross(CVertex* Be, CVertex* moveV, CVertex* nowv);
+	boolean mvcross_other(CVertex* Be, CShape* shape_head, CShape* nows, CVertex* nowv);
+	boolean mvinout_zu_judge(CShape* shape_head, CShape* nows, CShape* shape_final, CVertex* moveV, CVertex* nowv);
+	
 };
 
 

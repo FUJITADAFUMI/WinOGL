@@ -36,6 +36,12 @@ BEGIN_MESSAGE_MAP(CWinOGLView, CView)
 	ON_UPDATE_COMMAND_UI(ID_sfchoice, &CWinOGLView::OnUpdatesfchoice)
 	ON_COMMAND(ID_edgechoice, &CWinOGLView::Onedgechoice)
 	ON_UPDATE_COMMAND_UI(ID_edgechoice, &CWinOGLView::OnUpdateedgechoice)
+	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONUP()
+	ON_COMMAND(ID_vtmove, &CWinOGLView::Onvtmove)
+	ON_UPDATE_COMMAND_UI(ID_vtmove, &CWinOGLView::OnUpdatevtmove)
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONUP()
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -138,20 +144,21 @@ void CWinOGLView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 
 	AC.CreateShape(clickX, clickY);
-	if (AC.GetVertexFlag()) {
+	if (AC.GetVertexFlag()&&AC.GetVtMoveFlag()==false) {
 		AC.SelX(clickX);
 		AC.SelY(clickY);
 	}
-	else if (AC.GetSurfaceFlag()) {
+	if (AC.GetSurfaceFlag()) {
 		AC.SelX(clickX);
 		AC.SelY(clickY);
 	}
-	else if (AC.GetEdgeFlag()) {
+	if (AC.GetEdgeFlag()) {
 		AC.SelX(clickX);
 		AC.SelY(clickY);
 	}
 	//AC.AppendShape();
 	//AC.Append_vertex(clickX, clickY);
+	AC.SetVtmouseflag();
 
 	RedrawWindow();
 
@@ -322,4 +329,133 @@ void CWinOGLView::OnUpdateedgechoice(CCmdUI* pCmdUI)
 	else {
 		pCmdUI->SetCheck(false);
 	}
+}
+
+
+void CWinOGLView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
+	if ((AC.GetVtmouseflag() &&AC.GetVtMoveFlag())||(AC.GetRmouseflag()&&AC.GetSurfaceFlag())) {
+		CRect rect;
+		GetClientRect(rect);
+
+		float hi;
+		float w = rect.Width();
+		float h = rect.Height();
+
+		if (AC.GetVtMoveFlag()|| AC.GetRmouseflag()) {
+			clickX = (float)point.x / w;
+			clickY = 1 - (float)point.y / h;
+
+			if (w > h)
+			{
+				hi = (float)w / h;
+				clickX = (float)clickX * 2 - 1;
+				clickX = (float)clickX * hi;
+				clickY = (float)clickY * 2 - 1;
+				glOrtho(-1 * hi, 1 * hi, -1, 1, -100, 100);
+			}
+			else
+			{
+				hi = (float)h / w;
+				clickX = (float)clickX * 2 - 1;
+				clickX = (float)clickY * 2 - 1;
+				clickY = (float)clickY * hi;
+				glOrtho(-1, 1, -1 * hi, 1 * hi, -100, 100);
+			}
+
+			AC.MvX(clickX);
+			AC.MvY(clickY);
+		}
+	}
+	RedrawWindow();
+	CView::OnMouseMove(nFlags, point);
+}
+
+
+void CWinOGLView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
+	
+	AC.MoveIn(AC.mvX(),AC.mvY());
+	AC.SetVtmouseflag();
+	RedrawWindow();
+	CView::OnLButtonUp(nFlags, point);
+}
+
+
+void CWinOGLView::Onvtmove()
+{
+	// TODO: ここにコマンド ハンドラー コードを追加します。
+	AC.SetVtMoveFlag();
+	
+	RedrawWindow();
+}
+
+
+void CWinOGLView::OnUpdatevtmove(CCmdUI* pCmdUI)
+{
+	// TODO:ここにコマンド更新 UI ハンドラー コードを追加します。
+	if (AC.GetVtMoveFlag()) {
+		pCmdUI->SetCheck(true);
+	}
+	else {
+		pCmdUI->SetCheck(false);
+	}
+}
+
+
+void CWinOGLView::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
+	AC.SetRmouseflag();
+	CRect rect;
+	GetClientRect(rect);
+
+	float hi;
+	float w = rect.Width();
+	float h = rect.Height();
+
+	RclickX = (float)point.x / w;
+	RclickY = 1 - (float)point.y / h;
+
+	if (w > h)
+	{
+		hi = (float)w / h;
+		RclickX = (float)RclickX * 2 - 1;
+		RclickX = (float)RclickX * hi;
+		RclickY = (float)RclickY * 2 - 1;
+		glOrtho(-1 * hi, 1 * hi, -1, 1, -100, 100);
+	}
+	else
+	{
+		hi = (float)h / w;
+		RclickX = (float)RclickX * 2 - 1;
+		RclickX = (float)RclickY * 2 - 1;
+		RclickY = (float)RclickY * hi;
+		glOrtho(-1, 1, -1 * hi, 1 * hi, -100, 100);
+	}
+
+	AC.RSelX(RclickX);
+	AC.RSelY(RclickY);
+	//AC.AppendShape();
+	//AC.Append_vertex(clickX, clickY);
+	
+	RedrawWindow();
+
+	CView::OnLButtonDown(nFlags, point);
+}
+
+
+void CWinOGLView::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
+	if (AC.GetShapeMoovflag()) {
+		AC.ShapeMvHouse();
+		AC.SetShapeMoovflag();
+	}
+	AC.SetRmouseflag();
+	
+	RedrawWindow();
+	CView::OnRButtonUp(nFlags, point);
 }

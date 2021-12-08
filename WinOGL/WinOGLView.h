@@ -45,6 +45,8 @@ private:
 	HGLRC m_hRC;
 	float clickX;
 	float clickY;
+	float RclickX;
+	float RclickY;
 public:
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void OnDestroy();
@@ -61,6 +63,12 @@ public:
 	afx_msg void OnUpdatesfchoice(CCmdUI* pCmdUI);
 	afx_msg void Onedgechoice();
 	afx_msg void OnUpdateedgechoice(CCmdUI* pCmdUI);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void Onvtmove();
+	afx_msg void OnUpdatevtmove(CCmdUI* pCmdUI);
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 };
 
 #ifndef _DEBUG  // WinOGLView.cpp のデバッグ バージョン

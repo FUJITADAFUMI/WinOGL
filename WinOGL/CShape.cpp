@@ -44,6 +44,11 @@ CVertex* CShape::Getvertexfinal()
 	return vertex_final;
 }
 
+void CShape::Setvertexfinal(CVertex* new_final)
+{
+	vertex_final = new_final;
+}
+
 void CShape::SetNext(CShape* new_next)
 {
 	next_shape = new_next;
@@ -231,6 +236,144 @@ boolean CShape::inout_zu_judge(CShape* shape_head, CShape* shape_final)
 			}
 
 			As = As->GetNext();
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
+
+//頂点移動の自己交差
+boolean CShape::mvcross(CVertex* Be, CVertex* moveV, CVertex* nowv)
+{
+	CVertex* As = vertex_head;
+	CVertex* Ae = As->GetNext();
+	CVertex* Bs = vertex_final;
+
+	while (As != Bs) {
+		if (Ae== moveV|| As == moveV||Ae==Be||As==Be) {
+
+		}
+		else {
+			if (cross_judge(As, Ae, nowv, Be)) {
+				return true;
+			}
+		}
+		As = Ae;
+		Ae = Ae->GetNext();
+	}
+	if (vertex_head==moveV|| vertex_final == moveV|| vertex_final == Be||vertex_head==Be) {
+
+	}
+	else {
+		if (cross_judge(vertex_head, vertex_final, nowv, Be)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+//頂点移動の他交差
+boolean CShape::mvcross_other(CVertex* Be, CShape* shape_head, CShape* nows, CVertex* nowv)
+{
+	CShape* nowS = shape_head;
+	CVertex* As;
+	CVertex* Ae;
+	CVertex* Bs = vertex_head;
+
+	while (nowS->GetNext() != NULL) {
+		if (nows==nowS) {
+
+		}
+		else {
+			As = nowS->GetVertexhead();
+			Ae = As->GetNext();
+			while (Ae != NULL) {
+
+				if (cross_judge(As, Ae, nowv, Be)) {
+					return true;
+				}
+
+				As = Ae;
+				Ae = Ae->GetNext();
+			}
+			if (cross_judge(nowS->GetVertexhead(), nowS->Getvertexfinal(), nowv, Be)) {
+				return true;
+			}
+		}
+
+		nowS = nowS->GetNext();
+	}
+
+	return false;
+}
+
+//頂点移動の図形が内部にあるか
+boolean CShape::mvinout_zu_judge(CShape* shape_head, CShape* nows, CShape* shape_final, CVertex* moveV, CVertex* nowv)
+{
+	float all = 0;
+	CShape* nowS = shape_head;
+	//始点
+	CVertex* As;
+	//Shape最後の点
+	CVertex* Bs;
+	CVertex* Be;
+	//Shape最後の点
+	CVertex* Bs1=NULL;
+	CVertex* Be1=NULL;
+	
+	while (nowS->GetNext() != NULL) {
+		if (nows == nowS) {
+
+		}else {
+			As = nowS->GetVertexhead();
+			while (As != NULL) {
+				Bs = nows->GetVertexhead();
+				Be = Bs->GetNext();
+				while (Be != NULL) {
+					if (Bs == moveV) {
+						Bs1 = nowv;
+					}
+					else {
+						Bs1 = Bs;
+					}
+					if (Be == moveV) {
+						Be1 = nowv;
+					}
+					else {
+						Be1 = Be;
+					}
+					all = all + math.substend_angle(Bs1, Be1, As);
+					Bs = Be;
+					Be = Be->GetNext();
+					
+				}
+				if (nows->Getvertexfinal()== moveV) {
+					Bs1 = nowv;
+				}
+				else {
+					Bs1 = nows->Getvertexfinal();
+				}
+				if(nows->GetVertexhead() == moveV){
+					Be1 = nowv;
+				}
+				else {
+					Be1 = nows->GetVertexhead();
+				}
+				all = all + math.substend_angle(Bs1, Be1, As);
+				if (all < 0) {
+					all = all * -1;
+				}
+
+				if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+					return true;
+				}
+				else {
+					all = 0;
+				}
+
+				As = As->GetNext();
+			}
 		}
 		nowS = nowS->GetNext();
 	}
