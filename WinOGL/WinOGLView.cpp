@@ -42,6 +42,7 @@ BEGIN_MESSAGE_MAP(CWinOGLView, CView)
 	ON_UPDATE_COMMAND_UI(ID_vtmove, &CWinOGLView::OnUpdatevtmove)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
+	ON_WM_MOUSEWHEEL()
 END_MESSAGE_MAP()
 
 // CWinOGLView コンストラクション/デストラクション
@@ -458,4 +459,13 @@ void CWinOGLView::OnRButtonUp(UINT nFlags, CPoint point)
 	
 	RedrawWindow();
 	CView::OnRButtonUp(nFlags, point);
+}
+
+
+BOOL CWinOGLView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
+{
+	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
+	AC.LargeReduce(zDelta);
+	RedrawWindow();
+	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }

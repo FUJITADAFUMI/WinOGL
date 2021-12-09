@@ -59,6 +59,8 @@ public:
 	bool GetShapeMoovflag();
 	//図形移動処理
 	void ShapeMvHouse();
+	//拡大縮小
+	void LargeReduce(float zDelta);
 
 private:
 	//　頂点リストのヘッド
@@ -111,8 +113,12 @@ private:
 	////上の処理をしたか？
 	bool ShapeMoovflag = false;
 	CVertex diffvt;
-	
+	//動かした図形の点が図形の中にある
+	bool Inoutshape(CShape* selsp);
+	//図形の点が動かした図形の中にある
+	bool OtherInoutshape(CShape* selsp);
 	//右クリックしたか
 	bool Rmouseflag = false;
+	
 };
 

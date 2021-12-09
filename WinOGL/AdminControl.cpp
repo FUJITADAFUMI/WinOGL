@@ -490,6 +490,7 @@ void CAdminControl::SurfaceChoice(float x, float y)
 	if (GetRmouseflag()&& SelectSf!=NULL) {
 		ShapeMoov(RuseX(), RuseY(), mvX(), mvY());
 	}
+
 }
 //•Ó‘I‘ð•`‰æ
 void CAdminControl::EdgeChoice(float x, float y)
@@ -857,23 +858,139 @@ void CAdminControl::ShapeMoov(float x, float y, float mx, float my)
 		glEnd();
 
 		diffvt.SetXY(wdisx, wdisy);
-		SetShapeMoovflag();
+		ShapeMoovflag=true;
+}
+
+
+//“®‚©‚µ‚½}Œ`‚Ì“_‚ª}Œ`‚Ì’†‚É‚ ‚é
+
+bool CAdminControl::Inoutshape(CShape* selsp)
+{
+	float all = 0;
+	CShape* movS = selsp;
+	CVertex* movV;
+	CVertex newmovV;
+	CVertex* nowV;
+	CVertex* nextV;
+	CVertex diff = diffvt;
+
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			movV = movS->GetVertexhead();
+			while (movV != NULL) {
+				nowV = nowS->GetVertexhead();
+				nextV = nowV->GetNext();
+				while (nextV != NULL) {
+					newmovV.SetXY(movV->GetX() + diff.GetX(), movV->GetY() + diff.GetY());
+					all = all + math.substend_angle(nowV, nextV, &newmovV);
+					nowV = nextV;
+					nextV = nextV->GetNext();
+				}
+				all = all + math.substend_angle(nowS->Getvertexfinal(), nowS->GetVertexhead(), &newmovV);
+				if (all < 0) {
+					all = all * -1;
+				}
+				if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+					return true;
+				}	
+				movV = movV->GetNext();
+				all = 0;
+			}
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+	
+}
+//}Œ`‚Ì“_‚ª“®‚©‚µ‚½}Œ`‚Ì’†‚É‚ ‚é
+bool CAdminControl::OtherInoutshape(CShape* selsp)
+{
+	float all = 0;
+	CShape* movS = selsp;
+	CVertex* movV;
+	CVertex* nextmV;
+	CVertex newmovV;
+	CVertex newnextmV;
+	CVertex* nowV;
+	CVertex diff = diffvt;
+
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			nowV = nowS->GetVertexhead();
+			while (nowV!=NULL) {
+				movV = movS->GetVertexhead();
+				nextmV = movV->GetNext();
+				while (nextmV!=NULL) {
+					newmovV.SetXY(movV->GetX() + diff.GetX(), movV->GetY() + diff.GetY());
+					newnextmV.SetXY(nextmV->GetX() + diff.GetX(), nextmV->GetY() + diff.GetY());
+					all = all + math.substend_angle(&newmovV, &newnextmV, nowV);
+					movV = nextmV;
+					nextmV = nextmV->GetNext();
+				}
+				newmovV.SetXY(movS->GetVertexhead()->GetX()+ diff.GetX(), movS->GetVertexhead()->GetY() + diff.GetY());
+				newnextmV.SetXY(movS->Getvertexfinal()->GetX() + diff.GetX(), movS->Getvertexfinal()->GetY() + diff.GetY());
+				all = all + math.substend_angle(&newnextmV, &newmovV, nowV);
+				if (all < 0) {
+					all = all * -1;
+				}
+				if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+					return true;
+				}
+				nowV = nowV->GetNext();
+				all = 0;
+			}
+
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
 }
 
 void CAdminControl::ShapeMvHouse()
 {
-	CVertex diff = diffvt;
+		CVertex diff = diffvt;
+		CShape* nowS = shape_head;
+		CVertex* nowV;
+		CShape* movS = SelectSf;
+		if (Inoutshape(SelectSf) == false&& OtherInoutshape(SelectSf) == false) {
+			while (nowS->GetNext() != NULL) {
+				nowV = nowS->GetVertexhead();
+				while (nowV != NULL) {
+					if (nowS == movS) {
+						nowV->SetXY(nowV->GetX() + diff.GetX(), nowV->GetY() + diff.GetY());
+					}
+					nowV = nowV->GetNext();
+				}
+				nowS = nowS->GetNext();
+			}
+		}
+		
+}
+//Šg‘åk¬
+void CAdminControl::LargeReduce(float zDelta)
+{
+	CShape* movS = SelectSf;
 	CShape* nowS = shape_head;
 	CVertex* nowV;
-	CShape* movS = SelectSf;
-	while (nowS->GetNext() != NULL) {
-		nowV = nowS->GetVertexhead();
-		while (nowV != NULL) {
-			if (nowS == movS) {
-				nowV->SetXY(nowV->GetX() + diff.GetX(), nowV->GetY() + diff.GetY());
+	float a;
+	if (0 > zDelta) {
+		a = 0.95;
+	}
+	else {
+		a = 1.05;
+	}
+
+	while (nowS ->GetNext() != NULL) {
+		if (nowS==movS) {
+			nowV = nowS->GetVertexhead();
+			while (nowV != NULL) {
+				nowV->SetXY(a*(nowV->GetX()-0)-0, a*(nowV->GetY() - 0) - 0);
+				nowV = nowV->GetNext();
 			}
-			nowV = nowV->GetNext();
 		}
 		nowS = nowS->GetNext();
 	}
+
 }

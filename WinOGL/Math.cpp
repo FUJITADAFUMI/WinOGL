@@ -105,5 +105,17 @@ float Math::Gett()
 	return T;
 }
 
+CVertex Math::Center_gravity(CVertex* p1)
+{
+	CVertex* nowV = p1;
+	int cut = 0;
+	float addx;
+	float addy;
+	while (nowV!=NULL) {
+		nowV = nowV->GetNext();
+	}
+}
+
+
 
 
