@@ -423,6 +423,7 @@ void CAdminControl::VertexChoice(float x, float y)
 			dis = sqrt(pow(xp - x, 2) + pow(yp - y, 2));
 			if (dis <= 0.01) {
 				VtMove = nowV;
+				RtShape = nowS;
 				glColor3f(255, 0, 0);
 				glPointSize(10);
 				glBegin(GL_POINTS);
@@ -861,9 +862,7 @@ void CAdminControl::ShapeMoov(float x, float y, float mx, float my)
 		ShapeMoovflag=true;
 }
 
-
 //“®‚©‚µ‚½}Œ`‚Ì“_‚ª}Œ`‚Ì’†‚É‚ ‚é
-
 bool CAdminControl::Inoutshape(CShape* selsp)
 {
 	float all = 0;
@@ -947,14 +946,282 @@ bool CAdminControl::OtherInoutshape(CShape* selsp)
 	}
 	return false;
 }
+//Œð·”»’è
+bool CAdminControl::Crossshape(CShape* selsp)
+{
+	CShape* movS = selsp;
+	CVertex* movV;
+	CVertex* nextmV;
+	CVertex newmovV;
+	CVertex newnextmV;
+	CVertex* nowV;
+	CVertex* nextV;
+	CVertex diff = diffvt;
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			movV = movS->GetVertexhead();
+			nextmV=movV->GetNext();
+			while (nextmV != NULL) {
+				newmovV.SetXY(movV->GetX() + diff.GetX(), movV->GetY() + diff.GetY());
+				newnextmV.SetXY(nextmV->GetX() + diff.GetX(), nextmV->GetY() + diff.GetY());
+				nowV = nowS->GetVertexhead();
+				nextV = nowV->GetNext();
+				while (nextV != NULL) {	
+					if (nowS->cross_judge(&newmovV,&newnextmV,nowV,nextV)) {
+						return true;
+					}
+					nowV = nextV;
+					nextV = nextV->GetNext();
+				}
+				
+				movV = nextmV;
+				nextmV = movV->GetNext();
+			}
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
 
+//Šg‘åk¬‚Ì‚Æ‚«“_‚ª}Œ`‚Ì’†‚É‚ ‚é
+bool CAdminControl::LRInoutshape(CShape* selsp, float a)
+{
+	float all = 0;
+	CShape* movS = selsp;
+	CVertex* movV;
+	CVertex newmovV;
+	CVertex* nowV;
+	CVertex* nextV;
+
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			movV = movS->GetVertexhead();
+			while (movV != NULL) {
+				nowV = nowS->GetVertexhead();
+				nextV = nowV->GetNext();
+				while (nextV != NULL) {
+					//a*(mowV->GetX()-0)-0
+					newmovV.SetXY(a * (movV->GetX() - 0) - 0, a * (movV->GetY() - 0) - 0);
+					all = all + math.substend_angle(nowV, nextV, &newmovV);
+					nowV = nextV;
+					nextV = nextV->GetNext();
+				}
+				all = all + math.substend_angle(nowS->Getvertexfinal(), nowS->GetVertexhead(), &newmovV);
+				if (all < 0) {
+					all = all * -1;
+				}
+				if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+					return true;
+				}
+				movV = movV->GetNext();
+				all = 0;
+			}
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
+//Šg‘åk¬‚Ì‚Æ‚«“_‚ª“®‚©‚µ‚½}Œ`‚Ì’†‚É‚ ‚é
+bool CAdminControl::LROtherInoutsp(CShape* selsp, float a)
+{
+	float all = 0;
+	CShape* movS = selsp;
+	CVertex* movV;
+	CVertex* nextmV;
+	CVertex newmovV;
+	CVertex newnextmV;
+	CVertex* nowV;
+
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			nowV = nowS->GetVertexhead();
+			while (nowV != NULL) {
+				movV = movS->GetVertexhead();
+				nextmV = movV->GetNext();
+				while (nextmV != NULL) {
+					//a*(nextmV->GetX()-0)-0
+					newmovV.SetXY(a * (movV->GetX() - 0) - 0, a * (movV->GetY() - 0) - 0);
+					newnextmV.SetXY(a * (nextmV->GetX() - 0) - 0, a * (nextmV->GetY() - 0) - 0);
+					all = all + math.substend_angle(&newmovV, &newnextmV, nowV);
+					movV = nextmV;
+					nextmV = nextmV->GetNext();
+				}
+				//a*(movS->GetVertexhead()->GetX()-0)-0
+				//a*(movS->Getvertexfinal()->GetX()-0)-0
+				newmovV.SetXY(a * (movS->GetVertexhead()->GetX() - 0) - 0, a * (movS->GetVertexhead()->GetY() - 0) - 0);
+				newnextmV.SetXY(a * (movS->Getvertexfinal()->GetX() - 0) - 0, a * (movS->Getvertexfinal()->GetY() - 0) - 0);
+				all = all + math.substend_angle(&newnextmV, &newmovV, nowV);
+				if (all < 0) {
+					all = all * -1;
+				}
+				if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+					return true;
+				}
+				nowV = nowV->GetNext();
+				all = 0;
+			}
+
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
+//‰ñ“]‚Ì‚Æ‚«“_‚ª}Œ`‚Ì’†‚É‚ ‚é
+bool CAdminControl::RTInoutshape(CShape* selsp, double tha)
+{
+	float all = 0;
+	CVertex* rtV = VtMove;
+	CShape* movS = RtShape;
+	CVertex* movV;
+	CVertex newmovV;
+	CVertex* nowV;
+	CVertex* nextV;
+	float Rx;
+	float Ry;
+	
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			movV = movS->GetVertexhead();
+			while (movV != NULL) {
+				nowV = nowS->GetVertexhead();
+				nextV = nowV->GetNext();
+				while (nextV != NULL) {
+					Rx = (movV->GetX() - rtV->GetX()) * cos(tha) - (movV->GetY() - rtV->GetY()) * sin(tha) + rtV->GetX();
+					Ry = (movV->GetX() - rtV->GetX()) * sin(tha) + (movV->GetY() - rtV->GetY()) * cos(tha) + rtV->GetY();
+					newmovV.SetXY(Rx,Ry);
+					all = all + math.substend_angle(nowV, nextV, &newmovV);
+					nowV = nextV;
+					nextV = nextV->GetNext();
+				}
+				all = all + math.substend_angle(nowS->Getvertexfinal(), nowS->GetVertexhead(), &newmovV);
+				if (all < 0) {
+					all = all * -1;
+				}
+				if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+					return true;
+				}
+				movV = movV->GetNext();
+				all = 0;
+			}
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
+//‰ñ“]‚Ì‚Æ‚«“_‚ª“®‚©‚µ‚½}Œ`‚Ì’†‚É‚ ‚é
+bool CAdminControl::RTOtherInoutsp(CShape* selsp, double tha)
+{
+	float all = 0;
+	CVertex* rtV = VtMove;
+	CShape* movS = RtShape;
+	CVertex* movV;
+	CVertex* nextmV;
+	CVertex newmovV;
+	CVertex newnextmV;
+	CVertex* nowV;
+	float Rx1;
+	float Ry1;
+	float Rx2;
+	float Ry2;
+
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			nowV = nowS->GetVertexhead();
+			while (nowV != NULL) {
+				movV = movS->GetVertexhead();
+				nextmV = movV->GetNext();
+				while (nextmV != NULL) {
+					Rx1 = (movV->GetX() - rtV->GetX()) * cos(tha) - (movV->GetY() - rtV->GetY()) * sin(tha) + rtV->GetX();
+					Ry1 = (movV->GetX() - rtV->GetX()) * sin(tha) + (movV->GetY() - rtV->GetY()) * cos(tha) + rtV->GetY();
+					Rx2 = (nextmV->GetX() - rtV->GetX()) * cos(tha) - (nextmV->GetY() - rtV->GetY()) * sin(tha) + rtV->GetX();
+					Ry2 = (nextmV->GetX() - rtV->GetX()) * sin(tha) + (nextmV->GetY() - rtV->GetY()) * cos(tha) + rtV->GetY();
+					newmovV.SetXY(Rx1,Ry1);
+					newnextmV.SetXY(Rx2,Ry2);
+					all = all + math.substend_angle(&newmovV, &newnextmV, nowV);
+					movV = nextmV;
+					nextmV = nextmV->GetNext();
+				}
+				Rx1 = (movS->GetVertexhead()->GetX() - rtV->GetX()) * cos(tha) - (movS->GetVertexhead()->GetY() - rtV->GetY()) * sin(tha) + rtV->GetX();
+				Ry1 = (movS->GetVertexhead()->GetX() - rtV->GetX()) * sin(tha) + (movS->GetVertexhead()->GetY() - rtV->GetY()) * cos(tha) + rtV->GetY();
+				Rx2 = (movS->Getvertexfinal()->GetX() - rtV->GetX()) * cos(tha) - (movS->Getvertexfinal()->GetY() - rtV->GetY()) * sin(tha) + rtV->GetX();
+				Ry2 = (movS->Getvertexfinal()->GetX() - rtV->GetX()) * sin(tha) + (movS->Getvertexfinal()->GetY() - rtV->GetY()) * cos(tha) + rtV->GetY();
+				newmovV.SetXY(Rx1, Ry1);
+				newnextmV.SetXY(Rx2, Ry2);
+				all = all + math.substend_angle(&newnextmV, &newmovV, nowV);
+				if (all < 0) {
+					all = all * -1;
+				}
+				if (2 * M_PI - all < 0.1 && 2 * M_PI - all >-0.1) {
+					return true;
+				}
+				nowV = nowV->GetNext();
+				all = 0;
+			}
+
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
+//‰ñ“]Œð·”»’è
+bool CAdminControl::RTCrossshape(CShape* selsp, double tha)
+{
+	CVertex* rtV = VtMove;
+	CShape* movS = RtShape;
+	CVertex* movV;
+	CVertex* nextmV;
+	CVertex newmovV;
+	CVertex newnextmV;
+	CVertex* nowV;
+	CVertex* nextV;
+	float Rx1;
+	float Ry1;
+	float Rx2;
+	float Ry2;
+	CVertex diff = diffvt;
+	CShape* nowS = shape_head;
+	while (nowS->GetNext() != NULL) {
+		if (nowS != movS) {
+			movV = movS->GetVertexhead();
+			nextmV = movV->GetNext();
+			while (nextmV != NULL) {
+				Rx1 = (movV->GetX() - rtV->GetX()) * cos(tha) - (movV->GetY() - rtV->GetY()) * sin(tha) + rtV->GetX();
+				Ry1 = (movV->GetX() - rtV->GetX()) * sin(tha) + (movV->GetY() - rtV->GetY()) * cos(tha) + rtV->GetY();
+				Rx2 = (nextmV->GetX() - rtV->GetX()) * cos(tha) - (nextmV->GetY() - rtV->GetY()) * sin(tha) + rtV->GetX();
+				Ry2 = (nextmV->GetX() - rtV->GetX()) * sin(tha) + (nextmV->GetY() - rtV->GetY()) * cos(tha) + rtV->GetY();
+				newmovV.SetXY(Rx1, Ry1);
+				newnextmV.SetXY(Rx2, Ry2);
+				nowV = nowS->GetVertexhead();
+				nextV = nowV->GetNext();
+				while (nextV != NULL) {
+					if (nowS->cross_judge(&newmovV, &newnextmV, nowV, nextV)) {
+						return true;
+					}
+					nowV = nextV;
+					nextV = nextV->GetNext();
+				}
+
+				movV = nextmV;
+				nextmV = movV->GetNext();
+			}
+		}
+		nowS = nowS->GetNext();
+	}
+	return false;
+}
+//}Œ`ˆÚ“®ˆ—
 void CAdminControl::ShapeMvHouse()
 {
 		CVertex diff = diffvt;
 		CShape* nowS = shape_head;
 		CVertex* nowV;
 		CShape* movS = SelectSf;
-		if (Inoutshape(SelectSf) == false&& OtherInoutshape(SelectSf) == false) {
+		if (Inoutshape(SelectSf) == false&& OtherInoutshape(SelectSf) == false&&Crossshape(SelectSf) == false) {
 			while (nowS->GetNext() != NULL) {
 				nowV = nowS->GetVertexhead();
 				while (nowV != NULL) {
@@ -974,6 +1241,7 @@ void CAdminControl::LargeReduce(float zDelta)
 	CShape* movS = SelectSf;
 	CShape* nowS = shape_head;
 	CVertex* nowV;
+	//CVertex cg = math.Center_gravity(nowS->GetVertexhead());
 	float a;
 	if (0 > zDelta) {
 		a = 0.95;
@@ -986,11 +1254,65 @@ void CAdminControl::LargeReduce(float zDelta)
 		if (nowS==movS) {
 			nowV = nowS->GetVertexhead();
 			while (nowV != NULL) {
-				nowV->SetXY(a*(nowV->GetX()-0)-0, a*(nowV->GetY() - 0) - 0);
+				if (LRInoutshape(movS,a)==false&& LROtherInoutsp(movS, a) == false) {
+					//nowV->SetXY(a * (nowV->GetX() - 0) - 0, a * (nowV->GetY() - 0) - 0);
+					LRflag = true;
+				}
 				nowV = nowV->GetNext();
+			}
+			if (LRflag == true) {
+				nowV = nowS->GetVertexhead();
+				while (nowV != NULL) {
+					nowV->SetXY(a * (nowV->GetX() - 0) - 0, a * (nowV->GetY() - 0) - 0);
+					nowV = nowV->GetNext();
+				}
+				LRflag = false;
 			}
 		}
 		nowS = nowS->GetNext();
 	}
 
+}
+//‰ñ“]
+void CAdminControl::Rotate(float zDelta)
+{
+	CVertex* movV=VtMove;
+	CVertex* nowV;
+	CShape* nowS = shape_head;
+	CShape* movS = RtShape;
+	float Rx;
+	float Ry;
+	double tha;
+	if (0 > zDelta) {
+		tha = 0.05;
+	}
+	else {
+		tha = -0.05;
+	}
+	while (nowS->GetNext() != NULL) {
+		if (nowS == movS) {
+			nowV = nowS->GetVertexhead();
+			while (nowV != NULL) {
+				if (RTInoutshape(movS,tha)==false&& RTOtherInoutsp(movS, tha) == false&&RTCrossshape(movS, tha) == false) {
+					//Rx = (nowV->GetX() - movV->GetX()) * cos(tha) - (nowV->GetY() - movV->GetY()) * sin(tha) + movV->GetX();
+					//Ry = (nowV->GetX() - movV->GetX()) * sin(tha) + (nowV->GetY() - movV->GetY()) * cos(tha) + movV->GetY();
+					//nowV->SetXY(Rx, Ry);
+					RTflag = true;
+				}
+				nowV = nowV->GetNext();
+			}
+			if (RTflag == true) {
+				nowV = nowS->GetVertexhead();
+				while (nowV != NULL) {
+					Rx = (nowV->GetX() - movV->GetX()) * cos(tha) - (nowV->GetY() - movV->GetY()) * sin(tha) + movV->GetX();
+					Ry = (nowV->GetX() - movV->GetX()) * sin(tha) + (nowV->GetY() - movV->GetY()) * cos(tha) + movV->GetY();
+					nowV->SetXY(Rx, Ry);
+					nowV = nowV->GetNext();
+				}
+				RTflag = false;
+			}
+			
+		}
+		nowS = nowS->GetNext();
+	}
 }

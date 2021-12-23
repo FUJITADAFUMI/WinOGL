@@ -15,7 +15,7 @@ public:
 	void Sett(float t);
 	float Gett();
 	//dS
-	CVertex Center_gravity(CVertex* p1);
+	CVertex Center_gravity(CVertex* head);
 private:
 	float S;
 	float T;

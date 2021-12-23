@@ -61,6 +61,8 @@ public:
 	void ShapeMvHouse();
 	//拡大縮小
 	void LargeReduce(float zDelta);
+	//回転
+	void Rotate(float zDelta);
 
 private:
 	//　頂点リストのヘッド
@@ -75,6 +77,7 @@ private:
 	//点選択
 	void VertexChoice(float x, float y);
 	bool VertexFlag = false;
+	CShape* RtShape = NULL;
 	//現在点
 	float X = 0;
 	float Y = 0;
@@ -117,8 +120,21 @@ private:
 	bool Inoutshape(CShape* selsp);
 	//図形の点が動かした図形の中にある
 	bool OtherInoutshape(CShape* selsp);
+	//交差判定
+	bool Crossshape(CShape* selsp);
 	//右クリックしたか
 	bool Rmouseflag = false;
-	
+	//拡大縮小のとき点が図形の中にある
+	bool CAdminControl::LRInoutshape(CShape* selsp, float a);
+	//拡大縮小のとき点が動かした図形の中にある
+	bool CAdminControl::LROtherInoutsp(CShape* selsp, float a);
+	bool LRflag = false;
+	//回転のとき点が図形の中にある
+	bool CAdminControl::RTInoutshape(CShape* selsp, double tha);
+	//回転のとき点が動かした図形の中にある
+	bool CAdminControl::RTOtherInoutsp(CShape* selsp, double tha);
+	//回転交差判定
+	bool CAdminControl::RTCrossshape(CShape* selsp, double tha);
+	bool RTflag = false;
 };
 

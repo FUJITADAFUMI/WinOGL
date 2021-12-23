@@ -465,7 +465,12 @@ void CWinOGLView::OnRButtonUp(UINT nFlags, CPoint point)
 BOOL CWinOGLView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt)
 {
 	// TODO: ここにメッセージ ハンドラー コードを追加するか、既定の処理を呼び出します。
-	AC.LargeReduce(zDelta);
+	if (AC.GetSurfaceFlag()) {
+		AC.LargeReduce(zDelta);
+	}
+	if (AC.GetVertexFlag()) {
+		AC.Rotate(zDelta);
+	}
 	RedrawWindow();
 	return CView::OnMouseWheel(nFlags, zDelta, pt);
 }

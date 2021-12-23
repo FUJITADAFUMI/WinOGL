@@ -105,15 +105,21 @@ float Math::Gett()
 	return T;
 }
 
-CVertex Math::Center_gravity(CVertex* p1)
+CVertex Math::Center_gravity(CVertex* head)
 {
-	CVertex* nowV = p1;
-	int cut = 0;
-	float addx;
-	float addy;
+	CVertex* nowV=head;
+	CVertex cg;
+	float cut = 0;
+	float addx=0;
+	float addy=0;
 	while (nowV!=NULL) {
+		addx = addx + nowV->GetX();
+		addy = addy + nowV->GetY();
 		nowV = nowV->GetNext();
+		cut++;
 	}
+	cg.SetXY(addx / cut, addy / cut);
+	return cg;
 }
 
 
